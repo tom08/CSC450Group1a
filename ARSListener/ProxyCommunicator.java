@@ -36,18 +36,21 @@ public class ProxyCommunicator{
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 String cmd;
                 String[] pages = {
-                    "1,http://missouristate.edu",
-                    "2,http://google.com",
+                    "TYPE,,PAGE,,2",
+                    "1,,http://missouristate.edu",
+                    "2,,http://google.com",
                 };
                 String[] ad_locations = {
-                    "1,A,0.334,0.45,15,1",
-                    "2,B,0.223,0.55,12,1",
-                    "3,C,0.221,0.11,11,1",
-                    "4,D,0.123,0.8888,32,1",
+                    "TYPE,,AD,,4",
+                    "1,,A,,0.334,,0.45,,15,,1",
+                    "2,,B,,0.223,,0.55,,12,,1",
+                    "3,,C,,0.221,,0.11,,11,,1",
+                    "4,,D,,0.123,,0.8888,,32,,1",
                     }; 
                 String[] keywords = {
-                    "1,test keyword 1",
-                    "2,test kwd 2",
+                    "TYPE,,KEY,,2",
+                    "1,,test keyword 1",
+                    "2,,test kwd 2",
                 };
                 String[][] to_send = {
                     pages,
@@ -62,8 +65,6 @@ public class ProxyCommunicator{
                     for(int j = 0; j < to_send[i].length; j++){
                         out.println(to_send[i][j]);
                     }
-                    out.println("..");
-                    cmd = in.readLine();
                 }
             } catch (IOException e) {
                 log("Error: " + e);
