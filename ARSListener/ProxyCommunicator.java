@@ -1,3 +1,5 @@
+// Before compilation, jpa must be added to the classpath.
+// export CLASSPATH=$CLASSPATH:/usr/share/java/mysql-connector-java.jar
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -86,6 +88,21 @@ public class ProxyCommunicator{
             return keywords;
         }
 
+        private List<String> add_kp_relations(List<String> KP_relations, java.sql.ResultSet results){
+            String entry = "";
+            try{
+            while(results.next()){
+                entry += results.getLong("keyword_id");
+                entry += ",," + results.getLong("page_id");
+                KP_relations.add(entry);
+                entry = "";
+            }
+            } catch (SQLException ex){
+                log(ex.getMessage());
+            }
+            return KP_relations;
+        }
+
         public void run(){
             try{
                 BufferedReader in = new BufferedReader(
@@ -96,19 +113,23 @@ public class ProxyCommunicator{
                 java.sql.ResultSet page_results = null;
                 java.sql.ResultSet ad_results = null;
                 java.sql.ResultSet key_results = null;
+                java.sql.ResultSet KP_relations = null;
                 try{
                     page_results = conn.getAllPages();
                     ad_results = conn.getAllAdLocationVisits();
                     key_results = conn.getAllKeywords();
+                    KP_relations = conn.getAllPageKeywordRelationships();
                 } catch(NullPointerException ex){
                     log(ex.getMessage());
                 }
                 List<String> pages = new ArrayList<String>();
                 List<String> ad_locations = new ArrayList<String>();
                 List<String> keywords = new ArrayList<String>();
+                List<String> relations = new ArrayList<String>();
                 pages.add("TYPE,,PAGE");
                 ad_locations.add("TYPE,,AD");
                 keywords.add("TYPE,,KEY");
+                relations.add("TYPE,,KPR");
                 if(page_results != null){
                     pages = add_pages(pages, page_results);
                 }
@@ -118,12 +139,16 @@ public class ProxyCommunicator{
                 if(key_results != null){
                     keywords = add_keywords(keywords, key_results);
                 }
+                if(KP_relations != null){
+                    relations = add_kp_relations(relations, KP_relations);
+                }
 
 
                 List<List<String>> to_send = new ArrayList<List<String>>();
                 to_send.add(pages);
                 to_send.add(ad_locations);
                 to_send.add(keywords);
+                to_send.add(relations);
 
                 out.println("Please enter your command.\n");
                 cmd = in.readLine();
@@ -203,6 +228,20 @@ public class ProxyCommunicator{
             try {
                     stmt = conn().createStatement();
                     results = stmt.executeQuery("SELECT * FROM ad_location_visit");
+
+                }
+            catch (SQLException ex){
+                System.out.println("SQLException: " + ex.getMessage());
+            }
+            return results;
+        }
+
+        public java.sql.ResultSet getAllPageKeywordRelationships(){
+            java.sql.Statement stmt = null;
+            java.sql.ResultSet results = null;
+            try {
+                    stmt = conn().createStatement();
+                    results = stmt.executeQuery("SELECT * FROM keyword_page");
 
                 }
             catch (SQLException ex){
