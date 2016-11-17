@@ -4,7 +4,7 @@
  * riveted.js | v0.6.0
  * Copyright (c) 2015 Rob Flaherty (@robflaherty)
  * Licensed under the MIT license
- * Modified 10-15-2016
+ * Modified 11-16-2016
  * by Dillon Woollums (Woollums1806@live.missouristate.edu)
  */
 
@@ -36,7 +36,6 @@ var riveted = (function() {
 
       // Set class to apply riveted to
       rivetedClass = userRivetedClass || '';
-
       var element = $('#' + rivetedClass);
 
       // Set up options and defaults
@@ -312,19 +311,24 @@ function totalIdleTime() {
 };
 
 function sendDataToWebServer(url, aR, fR, tTime) {
-	var request = new XMLHttpRequest();
-	var jsonBlob = "{\"url\": \"" + url + "\", \"active ratio\":\"" + aR + "\", \"focus ratio\":\"" + fR + "\", \"total time\":\"" + tTime + "\"}";
-	request.open("POST", "ars.razib.info", true);
+	console.log("Sending Data to Riveted!");
+	var request = new XMLHttpRequest("{\"url\": \"" + url + "\", \"ad location\":\"" + rivetedClass.toString() + "\", \"active ratio\":\"" + aR + "\", \"focus ratio\":\"" + fR + "\", \"total time\":\"" + tTime + "\"}");
+	var jsonBlob = "{\"url\": \"" + url + "\", \"ad location\":\"" + rivetedClass.toString() + "\", \"active ratio\":\"" + aR + "\", \"focus ratio\":\"" + fR + "\", \"total time\":\"" + tTime + "\"}";
+	request.open("POST", "http://li107-234.members.linode.com/", true);
 	request.send(jsonBlob);
 	return request.responseText;
 }
 
 function addEvent() {
-  window.onbeforeunload = function(e) {
+	//thanks stackoverflow for the added handlers http://stackoverflow.com/questions/8999439/multiple-onbeforeunload
+	var existingUnloadFunction = window.onbeforeunload;
+	window.onbeforeunload = function(e) {
+	if(existingUnloadFunction) existingUnloadFunction(e);
     var activeRatio = Math.floor((clockTime / visitTime) * 100);
     var visiableTime = visitTime - hiddenTime;
     var focusRatio = Math.floor((visiableTime / visitTime) * 100);
-	sendDataToWebServer(window.location.href, activeRatio, focusRatio, visitTime);
+	
+	sendDataToWebServer(window.location.pathname, activeRatio, focusRatio, visitTime);
   return undefined;
 };
 };
