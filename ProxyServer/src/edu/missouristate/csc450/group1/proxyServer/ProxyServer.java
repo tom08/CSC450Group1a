@@ -4,27 +4,35 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.time.Clock;
+import java.time.Duration;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.sun.net.httpserver.HttpServer;
 
 public class ProxyServer {
+	 public static MysqlConnection sqlConnection;
 	private static String rivetedJs;
 	public static void main(String[] args) {
 		rivetedJs = loadRiveted();
 		HttpServer theProxyServer;
+		ARSCommunicator communicator;
 		try {
 			
 			theProxyServer = HttpServer.create(new InetSocketAddress(80), 0);
 			theProxyServer.createContext("/", new RequestHandler(rivetedJs));
 			theProxyServer.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());
 			theProxyServer.start();
+			sqlConnection = new MysqlConnection();
+			communicator = new ARSCommunicator();
+			communicator.start();
 		} catch (IOException e) {
 			System.out.println("Could not Create Server!");
 			e.printStackTrace();
 			System.exit(1);
 		}
 		System.out.println("Proxy Server Started.");
-
 	}
 	
 	private static String loadRiveted(){

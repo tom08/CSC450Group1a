@@ -20,7 +20,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 public class RequestHandler implements HttpHandler {
 	
-	 MysqlConnection sqlConnection;
+	
 	private String rivetedJsString;
 	private boolean isAlive;
 	private static String domainName = "li107-234.members.linode.com";
@@ -32,7 +32,6 @@ public class RequestHandler implements HttpHandler {
 			//if we got a valid file
 			isAlive = true;
 		}
-		sqlConnection = new MysqlConnection();
 	}
 	
 	public void handle(HttpExchange HTTPEx) throws IOException{
@@ -42,7 +41,13 @@ public class RequestHandler implements HttpHandler {
 		{
 			System.out.println("GOT DATA FROM USER!");
 			JSONObject request = new JSONObject(readRequest(HTTPEx.getRequestBody()));
-			sqlConnection.addAdLocationVisit(request.getString("url"), request.getString("ad location"), request.getDouble("focus ratio"), request.getDouble("active ratio"), request.getDouble("total time"));
+			boolean postedAdLocationVisit = false;
+			while(!postedAdLocationVisit){
+				synchronized(ProxyServer.sqlConnection){
+					ProxyServer.sqlConnection.addAdLocationVisit(request.getString("url"), request.getString("ad location"), request.getDouble("focus ratio"), request.getDouble("active ratio"), request.getDouble("total time"));
+					postedAdLocationVisit = true;
+				}
+			}
 			HTTPEx.sendResponseHeaders(200, 1);
 			HTTPEx.getResponseBody().write(0);
 		}
@@ -63,17 +68,25 @@ public class RequestHandler implements HttpHandler {
 			else{
 				try{
 				response = getModifiedPage(path.toString(), HTTPEx.getLocalAddress().getHostName());
-				if((path.toString().contains(".html")|| path.toString().endsWith("/")) && !sqlConnection.doesPageExistInDB(path.toString())){
-					sqlConnection.addPage(path.toString());
-					Elements keywordsElement = response.getElementsByAttributeValue("name", "keywords");
-					String[] keywords =keywordsElement.get(0).attr("content").split(", ");
-					for(String keyword : keywords){
-						keyword = keyword.replace("'", "\'");
-						if(!sqlConnection.doesKeywordExistInDB(keyword)){
-							sqlConnection.addKeywordToDB(keyword);
-							
+				boolean completedPageAndTagsAd = false;
+				while(!completedPageAndTagsAd){
+				synchronized(ProxyServer.sqlConnection){
+				if((path.toString().contains(".html")|| path.toString().endsWith("/")) && !ProxyServer.sqlConnection.doesPageExistInDB(path.toString())){
+
+						ProxyServer.sqlConnection.addPage(path.toString());
+						Elements keywordsElement = response.getElementsByAttributeValue("name", "keywords");
+						String[] keywords =keywordsElement.get(0).attr("content").split(", ");
+						for(String keyword : keywords){
+							keyword = keyword.replace("'", "\'");
+							if(!ProxyServer.sqlConnection.doesKeywordExistInDB(keyword)){
+								ProxyServer.sqlConnection.addKeywordToDB(keyword);
+								
+							}
+							ProxyServer.sqlConnection.addKeywordPage(path.toString(), keyword);
 						}
-						sqlConnection.addKeywordPage(path.toString(), keyword);
+
+					}
+					completedPageAndTagsAd = true;
 					}
 				}
 				}

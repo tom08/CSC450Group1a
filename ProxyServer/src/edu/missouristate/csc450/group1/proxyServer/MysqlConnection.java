@@ -192,7 +192,7 @@ public class MysqlConnection {
         java.sql.ResultSet results = null;
         try {
                 stmt = conn().createStatement();
-                results = stmt.executeQuery("SELECT * FROM keyword_page");
+                results = stmt.executeQuery("SELECT * FROM page_keywords");
 
             }
         catch (SQLException ex){
