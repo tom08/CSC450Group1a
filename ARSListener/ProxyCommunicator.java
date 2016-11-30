@@ -181,7 +181,7 @@ public class ProxyCommunicator{
         public MysqlConnection(){
             try{
                 Class.forName("com.mysql.jdbc.Driver").newInstance();
-                this.connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/ProxyAdData?","root","password");
+                this.connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/adData?","ARS","password");
             }
             catch (Exception ex){
                 System.out.println("There was an error establishing the DB connection.");
