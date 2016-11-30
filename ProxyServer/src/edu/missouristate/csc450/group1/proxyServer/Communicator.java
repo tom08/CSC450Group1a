@@ -90,6 +90,11 @@ public class Communicator {
             new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             String cmd;
+            cmd = in.readLine();
+            String[] data = cmd.split(",,");
+            String date = null;
+            if(data.length > 1)
+                date = data[1];
 
             java.sql.ResultSet page_results = null;
             java.sql.ResultSet ad_results = null;
@@ -99,10 +104,10 @@ public class Communicator {
             	boolean gotEverything = false;
             	while(!gotEverything){
             		synchronized(ProxyServer.sqlConnection){
-                        page_results = ProxyServer.sqlConnection.getAllPages();
-                        ad_results = ProxyServer.sqlConnection.getAllAdLocationVisits();
-                        key_results =ProxyServer.sqlConnection.getAllKeywords();
-                        KP_relations = ProxyServer.sqlConnection.getAllPageKeywordRelationships();
+                        page_results = ProxyServer.sqlConnection.getAllPages(date);
+                        ad_results = ProxyServer.sqlConnection.getAllAdLocationVisits(date);
+                        key_results =ProxyServer.sqlConnection.getAllKeywords(date);
+                        KP_relations = ProxyServer.sqlConnection.getAllPageKeywordRelationships(date);
                         gotEverything = true;
             		}
             	}
@@ -142,7 +147,6 @@ public class Communicator {
             cmd = in.readLine();
             for(int i = 0; i < to_send.size(); i++){
                 for(int j = 0; j < to_send.get(i).size(); j++){
-                    log(to_send.get(i).get(j));
                     out.println(to_send.get(i).get(j));
                 }
             }
