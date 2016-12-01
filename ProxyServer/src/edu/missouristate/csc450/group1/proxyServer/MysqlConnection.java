@@ -22,18 +22,25 @@ public class MysqlConnection {
         return this.connection;
     }
 
-    public java.sql.ResultSet getAllPages(){
+    public java.sql.ResultSet getAllPages(String date){
         java.sql.Statement stmt = null;
         java.sql.ResultSet results = null;
+        String date_clause = "";
+        if(date != null)
+            date_clause = " WHERE created_at > '"+date+"'";
         try {
                 stmt = conn().createStatement();
-                results = stmt.executeQuery("SELECT * FROM page");
+                results = stmt.executeQuery("SELECT * FROM page"+date_clause);
 
             }
         catch (SQLException ex){
             System.out.println("SQLException: " + ex.getMessage());
         }
         return results;
+    }
+
+    public java.sql.ResultSet getAllPages(){
+        return getAllPages(null);
     }
     
     public void addPage(String url){
@@ -73,18 +80,25 @@ public class MysqlConnection {
     	return getPageId(url) != -1;
     }
 
-    public java.sql.ResultSet getAllKeywords(){
+    public java.sql.ResultSet getAllKeywords(String date){
         java.sql.Statement stmt = null;
         java.sql.ResultSet results = null;
+        String date_clause = "";
+        if(date != null)
+            date_clause = " WHERE created_at > '"+date+"'";
         try {
                 stmt = conn().createStatement();
-                results = stmt.executeQuery("SELECT * FROM keyword");
+                results = stmt.executeQuery("SELECT * FROM keyword"+date_clause);
 
             }
         catch (SQLException ex){
             System.out.println("SQLException: " + ex.getMessage());
         }
         return results;
+    }
+
+    public java.sql.ResultSet getAllKeywords(){
+        return getAllKeywords(null);
     }
     
     public long getKeywordId(String keyword){
@@ -156,18 +170,25 @@ public class MysqlConnection {
         }   
     }
     
-    public java.sql.ResultSet getAllAdLocationVisits(){
+    public java.sql.ResultSet getAllAdLocationVisits(String date){
         java.sql.Statement stmt = null;
         java.sql.ResultSet results = null;
+        String date_clause = "";
+        if(date != null)
+            date_clause = " WHERE created_at > '"+date+"'";
         try {
                 stmt = conn().createStatement();
-                results = stmt.executeQuery("SELECT * FROM ad_location_visit");
+                results = stmt.executeQuery("SELECT * FROM ad_location_visit"+date_clause);
 
             }
         catch (SQLException ex){
             System.out.println("SQLException: " + ex.getMessage());
         }
         return results;
+    }
+
+    public java.sql.ResultSet getAllAdLocationVisits(){
+        return getAllAdLocationVisits(null);
     }
 
     public void addAdLocationVisit(String url, String pageLocation, double focusRatio, double activeRatio, double totalSpent){
@@ -187,17 +208,24 @@ public class MysqlConnection {
             System.out.println("SQLException: " + ex.getMessage());
         }  
     }
-    public java.sql.ResultSet getAllPageKeywordRelationships(){
+    public java.sql.ResultSet getAllPageKeywordRelationships(String date){
         java.sql.Statement stmt = null;
         java.sql.ResultSet results = null;
+        String date_clause = "";
+        if(date != null)
+            date_clause = " WHERE created_at > '"+date+"'";
         try {
                 stmt = conn().createStatement();
-                results = stmt.executeQuery("SELECT * FROM page_keywords");
+                results = stmt.executeQuery("SELECT * FROM page_keywords"+date_clause);
 
             }
         catch (SQLException ex){
             System.out.println("SQLException: " + ex.getMessage());
         }
         return results;
+    }
+
+    public java.sql.ResultSet getAllPageKeywordRelationships(){
+        return getAllPageKeywordRelationships(null);
     }
 }
