@@ -113,6 +113,7 @@ public class RequestHandler implements HttpHandler {
 			HTTPEx.sendResponseHeaders(404, fourOhFourArray.length);
 			HTTPEx.getResponseBody().write(fourOhFourArray);
 		}
+		
 		HTTPEx.close();
 	}//end handle
 	
@@ -140,6 +141,11 @@ public class RequestHandler implements HttpHandler {
 				
 				
 			}
+				Elements scripts = page.select("script[src*=lightbox]");
+				for(Element script:scripts){
+					script.remove();
+				}
+				
 				//add all the scripts to the page
 			Element scriptLink = new Element(Tag.valueOf("script"), "");
 

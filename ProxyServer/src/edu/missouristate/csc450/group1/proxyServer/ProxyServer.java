@@ -22,7 +22,7 @@ public class ProxyServer {
 			
 			theProxyServer = HttpServer.create(new InetSocketAddress(80), 0);
 			theProxyServer.createContext("/", new RequestHandler(rivetedJs));
-			theProxyServer.setExecutor(java.util.concurrent.Executors.newCachedThreadPool());
+			theProxyServer.setExecutor(java.util.concurrent.Executors.newFixedThreadPool(8));
 			theProxyServer.start();
 			sqlConnection = new MysqlConnection();
 			communicator = new ARSCommunicator();

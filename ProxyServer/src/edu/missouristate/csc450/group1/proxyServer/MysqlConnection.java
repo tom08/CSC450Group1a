@@ -3,6 +3,8 @@ package edu.missouristate.csc450.group1.proxyServer;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import com.mysql.jdbc.PreparedStatement;
+
 public class MysqlConnection {
     java.sql.Connection connection;
 
@@ -45,11 +47,12 @@ public class MysqlConnection {
     
     public void addPage(String url){
     	//add a page to the db
-    	java.sql.Statement stmt = null;
+    	java.sql.PreparedStatement stmt = null;
     	int results;
     	try{
-    		stmt = conn().createStatement();
-    		results = stmt.executeUpdate("INSERT into adData.page (url) VALUES ('" + url + "')");
+    		stmt = conn().prepareStatement("INSERT into adData.page (url) VALUES (?)");
+    		stmt.setString(1, url);
+    		results = stmt.executeUpdate();
     	}
         catch (SQLException ex){
             System.out.println("SQLException: " + ex.getMessage());
@@ -127,11 +130,12 @@ public class MysqlConnection {
     
     public void addKeywordToDB(String keyword){
     	//add a keyword to the db
-    	java.sql.Statement stmt = null;
+    	java.sql.PreparedStatement stmt = null;
     	int results;
     	try{
-    		stmt = conn().createStatement();
-    		results = stmt.executeUpdate("INSERT into adData.keyword (keyword_name) VALUES ('" + keyword + "')");
+    		stmt = conn().prepareStatement("INSERT into adData.keyword (keyword_name) VALUES (?)");
+    		stmt.setString(1, keyword);
+    		results = stmt.executeUpdate();
     	}
         catch (SQLException ex){
             System.out.println("SQLException: " + ex.getMessage());
@@ -157,13 +161,15 @@ public class MysqlConnection {
     
     public void addKeywordPage(String url, String keyword){
     	//add a keyword page to the db
-    	long urlId = getPageId(url);
-    	long keyId = getKeywordId(keyword);
-    	java.sql.Statement stmt = null;
+    	Long urlId = getPageId(url);
+    	Long keyId = getKeywordId(keyword);
+    	java.sql.PreparedStatement stmt = null;
     	int results;
     	try{
-    		stmt = conn().createStatement();
-    		results = stmt.executeUpdate("INSERT into adData.page_keywords (keywords, page) VALUES (" + keyId + "," + urlId +")");
+    		stmt = conn().prepareStatement("INSERT into adData.page_keywords (keywords, page) VALUES (?, ?)");
+    		stmt.setLong(1, keyId);
+    		stmt.setLong(2, urlId);
+    		results = stmt.executeUpdate();
     	}
         catch (SQLException ex){
             System.out.println("SQLException: " + ex.getMessage());
@@ -193,16 +199,16 @@ public class MysqlConnection {
 
     public void addAdLocationVisit(String url, String pageLocation, double focusRatio, double activeRatio, double totalSpent){
     	long urlId = getPageId(url);
-    	java.sql.Statement stmt = null;
+    	java.sql.PreparedStatement stmt = null;
     	int results;
     	try{
-    		stmt = conn().createStatement();
-    		results = stmt.executeUpdate("INSERT into adData.ad_location_visit (page_location, focus_ratio, active_ratio, total_spent, page_id) VALUES (" 
-    				+ pageLocation.substring(0, 1) + "," 
-    				+ focusRatio + "," 
-    				+ activeRatio + "," 
-    				+ totalSpent +","
-    				+ urlId +")");
+    		stmt = conn().prepareStatement("INSERT into adData.ad_location_visit (page_location, focus_ratio, active_ratio, total_spent, page_id) VALUES (?, ?, ?, ?, ?)");
+    		stmt.setString(1, pageLocation.substring(0, 1));
+    		stmt.setDouble(2, focusRatio);
+    		stmt.setDouble(3, activeRatio);
+    		stmt.setDouble(4, totalSpent);
+    		stmt.setLong(5, urlId);
+    		results = stmt.executeUpdate();
     	}
         catch (SQLException ex){
             System.out.println("SQLException: " + ex.getMessage());
