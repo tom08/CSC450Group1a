@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 
 import org.json.*;
 import java.net.URI;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -39,7 +41,7 @@ public class RequestHandler implements HttpHandler {
 		String requestMethod = HTTPEx.getRequestMethod();
 		if(requestMethod.equals("POST"))
 		{
-			System.out.println("GOT DATA FROM USER!");
+			System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + " GOT DATA FROM USER!");
 			JSONObject request = new JSONObject(readRequest(HTTPEx.getRequestBody()));
 			boolean postedAdLocationVisit = false;
 			while(!postedAdLocationVisit){
@@ -91,7 +93,7 @@ public class RequestHandler implements HttpHandler {
 				}
 				}
 				catch(IOException e){
-					System.out.println("Error getting page from KC Star:" + path.toString());
+					System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) +" Error getting page from KC Star:" + path.toString());
 					response = null;
 				}
 				if(response != null){
@@ -108,11 +110,12 @@ public class RequestHandler implements HttpHandler {
 		}//end not a post
 		}//end isAlive
 		else{
-			System.out.println("INVALID RIVETED COPY GIVEN TO THREAD!");
+			System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + " INVALID RIVETED COPY GIVEN TO THREAD!");
 			byte fourOhFourArray[] = page404.getBytes();
 			HTTPEx.sendResponseHeaders(404, fourOhFourArray.length);
 			HTTPEx.getResponseBody().write(fourOhFourArray);
 		}
+		
 		HTTPEx.close();
 	}//end handle
 	
@@ -140,6 +143,11 @@ public class RequestHandler implements HttpHandler {
 				
 				
 			}
+				Elements scripts = page.select("script[src*=lightbox]");
+				for(Element script:scripts){
+					script.remove();
+				}
+				
 				//add all the scripts to the page
 			Element scriptLink = new Element(Tag.valueOf("script"), "");
 

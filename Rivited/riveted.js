@@ -4,33 +4,33 @@
  * riveted.js | v0.6.0
  * Copyright (c) 2015 Rob Flaherty (@robflaherty)
  * Licensed under the MIT license
- * Modified 11-16-2016
+ * Modified 11-30-2016
  * by Dillon Woollums (Woollums1806@live.missouristate.edu)
  */
 
 var riveted = (function() {
 
-    var started = false,
-      stopped = false,
-      turnedOff = false,
-      clockTime = 0,
-      startTime = new Date(),
-      clockTimer = null,
-      idleTimer = null,
-      visitTime = 0,
-      hiddenTimer,
-      hiddenTime = 0,
-      sendEvent,
-      sendUserTiming,
-      reportInterval,
-      idleTimeout,
-      nonInteraction,
-      universalGA,
-      classicGA,
-      universalSendCommand,
-      googleTagManager,
-      rivetedClass,
-      gaGlobal;
+    var  started = false;
+    var  stopped = false;
+    var  turnedOff = false;
+    var  clockTime = 0;
+    var  startTime = new Date();
+    var  clockTimer = null;
+    var  idleTimer = null;
+    var  visitTime = 0;
+    var  hiddenTimer;
+    var  hiddenTime = 0;
+	var  sendEvent;
+    var  sendUserTiming;
+    var  reportInterval;
+    var  idleTimeout;
+    var  nonInteraction;
+    var  universalGA;
+    var  classicGA;
+    var  universalSendCommand;
+    var  googleTagManager;
+    var  rivetedClass;
+    var  gaGlobal;
 
     function init(userRivetedClass, options) {
 
@@ -306,30 +306,31 @@ function totalTime() {
 };
 
 function totalIdleTime() {
+
   hiddenTime = hiddenTime + 1;
+  visitTime = visitTime + 1;
   hiddenTimeEvent();
 };
 
-function sendDataToWebServer(url, aR, fR, tTime) {
-	console.log("Sending Data to Riveted!");
-	var request = new XMLHttpRequest("{\"url\": \"" + url + "\", \"ad location\":\"" + rivetedClass.toString() + "\", \"active ratio\":\"" + aR + "\", \"focus ratio\":\"" + fR + "\", \"total time\":\"" + tTime + "\"}");
-	var jsonBlob = "{\"url\": \"" + url + "\", \"ad location\":\"" + rivetedClass.toString() + "\", \"active ratio\":\"" + aR + "\", \"focus ratio\":\"" + fR + "\", \"total time\":\"" + tTime + "\"}";
+function sendDataToWebServer() {
+	var aR = Math.floor((clockTime / visitTime) * 100);
+	var visiableTime = visitTime - hiddenTime;
+	var fR = Math.floor((visiableTime / visitTime) * 100);
+	var request = new XMLHttpRequest();
+	var jsonBlob = "{\"url\": \"" + window.location.pathname + "\", \"ad location\":\"" + rivetedClass.toString() + "\", \"active ratio\":\"" + aR + "\", \"focus ratio\":\"" + fR + "\", \"total time\":\"" + visitTime+ "\"}";
 	request.open("POST", "http://li107-234.members.linode.com/", true);
 	request.send(jsonBlob);
 	return request.responseText;
-}
+};
+
 
 function addEvent() {
 	//thanks stackoverflow for the added handlers http://stackoverflow.com/questions/8999439/multiple-onbeforeunload
 	var existingUnloadFunction = window.onbeforeunload;
 	window.onbeforeunload = function(e) {
-	if(existingUnloadFunction) existingUnloadFunction(e);
-    var activeRatio = Math.floor((clockTime / visitTime) * 100);
-    var visiableTime = visitTime - hiddenTime;
-    var focusRatio = Math.floor((visiableTime / visitTime) * 100);
-	
-	sendDataToWebServer(window.location.pathname, activeRatio, focusRatio, visitTime);
-  return undefined;
+		if(existingUnloadFunction) existingUnloadFunction(e);
+		sendDataToWebServer();
+		return undefined;
 };
 };
 
