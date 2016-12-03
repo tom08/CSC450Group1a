@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.time.Clock;
 import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,16 +26,16 @@ public class ProxyServer {
 			theProxyServer.createContext("/", new RequestHandler(rivetedJs));
 			theProxyServer.setExecutor(java.util.concurrent.Executors.newFixedThreadPool(8));
 			theProxyServer.start();
-			sqlConnection = new MysqlConnection();
+			sqlConnection = new MysqlConnection(5);
 			communicator = new ARSCommunicator();
 			communicator.start();
 		} catch (IOException e) {
-			System.out.println("Could not Create Server!");
+			System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + " Could not Create Server!");
 			e.printStackTrace();
 			System.exit(1);
 		}
-		System.out.println("Proxy Server Started.");
-	}
+		System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + " Proxy Server Started.");
+	} 
 	
 	private static String loadRiveted(){
 		//save the rivtedJs into memory
@@ -52,7 +54,7 @@ public class ProxyServer {
 			rivetedJsString = sb.toString();
 			br.close();
 		} catch (IOException e) {
-			System.out.println("FATAL ERROR: COULD NOT READ RIVITED FILE!");
+			System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago"))+ " FATAL ERROR: COULD NOT READ RIVITED FILE!");
 			e.printStackTrace();
 			System.exit(1);
 		}
@@ -60,7 +62,7 @@ public class ProxyServer {
 			try {
 				br.close();
 			} catch (IOException e) {
-				System.out.println("FATAL ERROR: COULD NOT CLOSE RIVITED FILE!");
+				System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + " FATAL ERROR: COULD NOT CLOSE RIVITED FILE!");
 				e.printStackTrace();
 				System.exit(1);
 			}

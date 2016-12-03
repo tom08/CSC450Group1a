@@ -2,12 +2,14 @@ package edu.missouristate.csc450.group1.proxyServer;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 
 public class ARSCommunicator extends Thread{
     @Override
 	public void run() {
-        System.out.println("The ProxyCommunicator server is running.");
+        System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + " The ProxyCommunicator server is running.");
         int clientNumber = 0;
         ServerSocket listener;
         listener = null;
