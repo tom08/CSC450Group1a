@@ -3,6 +3,7 @@ package edu.missouristate.csc450.group1.proxyServer;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -36,7 +37,7 @@ public class MysqlConnection {
         try {
             	if(date != null){
                 stmt = conn().prepareStatement("SELECT * FROM page WHERE created_at > ?");
-                stmt.setDate(1, Date.valueOf(date));
+                stmt.setTimestamp(1, Timestamp.valueOf(date));  
             	}
             	else{
                     stmt = conn().prepareStatement("SELECT * FROM page");	
@@ -110,7 +111,7 @@ public class MysqlConnection {
         try {
         		if(date != null){
         			stmt = conn().prepareStatement("SELECT * FROM keyword WHERE created_at > ?");
-        			stmt.setDate(1, Date.valueOf(date));
+        			stmt.setTimestamp(1, Timestamp.valueOf(date));  
         		}
         		else{
         			stmt = conn().prepareStatement("SELECT * FROM keyword");
@@ -220,7 +221,7 @@ public class MysqlConnection {
         try {
         		if(date != null){
         			stmt = conn().prepareStatement("SELECT * FROM ad_location_visit WHERE created_at > ?");
-        			stmt.setDate(1, Date.valueOf(date));
+        			stmt.setTimestamp(1, Timestamp.valueOf(date));  
         		}
         		else{
         			stmt = conn().prepareStatement("SELECT * FROM ad_location_visit");
@@ -266,7 +267,7 @@ public class MysqlConnection {
         try {
         	if(date!=null){
         		stmt = conn().prepareStatement("SELECT * FROM page_keywords WHERE created_at >  ?");
-        		stmt.setDate(1, Date.valueOf(date));
+        		stmt.setTimestamp(1, Timestamp.valueOf(date));  
         	}
         	else{
         		stmt = conn().prepareStatement("SELECT * FROM page_keywords");
