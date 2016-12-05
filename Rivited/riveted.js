@@ -318,7 +318,7 @@ function sendDataToWebServer() {
 	var fR = Math.floor((visiableTime / visitTime) * 100);
 	var request = new XMLHttpRequest();
 	var jsonBlob = "{\"url\": \"" + window.location.pathname + "\", \"ad location\":\"" + rivetedClass.toString() + "\", \"active ratio\":\"" + aR + "\", \"focus ratio\":\"" + fR + "\", \"total time\":\"" + visitTime+ "\"}";
-	request.open("POST", "http://li107-234.members.linode.com/", true);
+	request.open("POST", "http://li107-234.members.linode.com/", false);
 	request.send(jsonBlob);
 	return request.responseText;
 };
