@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,7 +145,7 @@ public class Communicator {
             to_send.add(keywords);
             to_send.add(relations);
 
-            out.println("Please enter your command.\n");
+            out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + "Please enter your command.\n");
             cmd = in.readLine();
             for(int i = 0; i < to_send.size(); i++){
                 for(int j = 0; j < to_send.get(i).size(); j++){
@@ -163,6 +165,6 @@ public class Communicator {
     }
 
     private void log(String message) {
-        System.out.println(message);
+        System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + message);
     }
 }
