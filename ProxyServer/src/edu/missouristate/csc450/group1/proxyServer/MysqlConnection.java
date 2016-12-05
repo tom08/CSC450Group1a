@@ -10,6 +10,8 @@ import java.time.ZonedDateTime;
 import com.mysql.jdbc.PreparedStatement;
 
 public class MysqlConnection {
+	//Class for keeping track of the SQL connection this server uses
+	//the connect() calls in the functions are to automatically probe whether the connection to the DB is sound, and reconnect if neccessary.
     java.sql.Connection connection;
     int maxConnAttempts;
     public MysqlConnection(int maxConnectionAttempts){
@@ -27,6 +29,7 @@ public class MysqlConnection {
     }
 
     private java.sql.Connection conn(){
+    	//mainly for short-handing this.connection
         return this.connection;
     }
 
@@ -34,7 +37,9 @@ public class MysqlConnection {
     	connect();
         java.sql.PreparedStatement stmt = null;
         java.sql.ResultSet results = null;
+       
         try {
+        		//if the date is specified, only get entries newer than the date, otherwise get everything
             	if(date != null){
                 stmt = conn().prepareStatement("SELECT * FROM page WHERE created_at > ?");
                 stmt.setTimestamp(1, Timestamp.valueOf(date));  
@@ -109,6 +114,7 @@ public class MysqlConnection {
         java.sql.ResultSet results = null;
         connect();
         try {
+        	//if the date is specified, only get entries newer than the date, otherwise get everything
         		if(date != null){
         			stmt = conn().prepareStatement("SELECT * FROM keyword WHERE created_at > ?");
         			stmt.setTimestamp(1, Timestamp.valueOf(date));  
@@ -219,6 +225,7 @@ public class MysqlConnection {
         java.sql.ResultSet results = null;
         connect();
         try {
+        	//if the date is specified, only get entries newer than the date, otherwise get everything
         		if(date != null){
         			stmt = conn().prepareStatement("SELECT * FROM ad_location_visit WHERE created_at > ?");
         			stmt.setTimestamp(1, Timestamp.valueOf(date));  
@@ -272,6 +279,7 @@ public class MysqlConnection {
         String date_clause = "";
         connect();
         try {
+        	//if the date is specified, only get entries newer than the date, otherwise get everything
         	if(date!=null){
         		stmt = conn().prepareStatement("SELECT * FROM page_keywords WHERE created_at >  ?");
         		stmt.setTimestamp(1, Timestamp.valueOf(date));  
@@ -294,6 +302,7 @@ public class MysqlConnection {
     }
     
     private void pokeDB() throws SQLException{
+    	//make sure the connection to the DB works, throw exception if it doesn't
     	java.sql.PreparedStatement stmt = null;
     	java.sql.ResultSet results = null;
     	stmt = conn().prepareStatement("SELECT 1");
@@ -302,6 +311,7 @@ public class MysqlConnection {
     }
     
     private void connect(){
+    	//if necessary, connect to the database. Will try maxConnAttempts times.
     	int attemptsCounter = 1;
     	boolean isConnected = false;
     	if(this.connection != null){

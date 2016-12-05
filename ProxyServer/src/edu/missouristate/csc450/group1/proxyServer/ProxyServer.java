@@ -14,22 +14,29 @@ import java.util.TimerTask;
 import com.sun.net.httpserver.HttpServer;
 
 public class ProxyServer {
+	//sql connection is a shared resource between all threads
 	 public static MysqlConnection sqlConnection;
+	 //the contents of the riveted.js file
 	private static String rivetedJs;
+	
 	public static void main(String[] args) {
-		rivetedJs = loadRiveted();
-		HttpServer theProxyServer;
-		ARSCommunicator communicator;
-		try {
-			
+		rivetedJs = loadRiveted(); //get the rivited string
+		//declare both threads
+		HttpServer theProxyServer; //access to kc star website
+		ARSCommunicator communicator; //access to DB from ARS
+		try {			
+			//start SQL connection
+			sqlConnection = new MysqlConnection(5);
+			//initialize Proxyserver
 			theProxyServer = HttpServer.create(new InetSocketAddress(80), 2056);
 			theProxyServer.createContext("/", new RequestHandler(rivetedJs));
 			theProxyServer.setExecutor(java.util.concurrent.Executors.newFixedThreadPool(64));
 			theProxyServer.start();
-			sqlConnection = new MysqlConnection(5);
+			//initialize communicator
 			communicator = new ARSCommunicator();
 			communicator.start();
 		} catch (IOException e) {
+			//if something went wrong starting those processes, print out the error and quit
 			System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + " Could not Create Server!");
 			e.printStackTrace();
 			System.exit(1);
