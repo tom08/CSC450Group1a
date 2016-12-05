@@ -245,9 +245,13 @@ public class MysqlConnection {
     	java.sql.PreparedStatement stmt = null;
     	int results;
     	connect();
+    	int endOfPageLocation = 2;
+    	if(pageLocation.length() < 2){
+    		endOfPageLocation = 1;
+    	}
     	try{
     		stmt = conn().prepareStatement("INSERT into adData.ad_location_visit (page_location, focus_ratio, active_ratio, total_spent, page_id) VALUES (?, ?, ?, ?, ?)");
-    		stmt.setString(1, pageLocation.substring(0, 1));
+    		stmt.setString(1, pageLocation.substring(0, endOfPageLocation));
     		stmt.setDouble(2, focusRatio);
     		stmt.setDouble(3, activeRatio);
     		stmt.setDouble(4, totalSpent);
@@ -257,6 +261,9 @@ public class MysqlConnection {
         catch (SQLException ex){
             System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + " SQLException: " + ex.getMessage());
         }  
+    	catch (IndexOutOfBoundsException ex){
+    		System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + " IndexOutOfBoundsException: " + ex.getMessage());
+    	}
 
     }
     public java.sql.ResultSet getAllPageKeywordRelationships(String date){
