@@ -41,7 +41,6 @@ public class RequestHandler implements HttpHandler {
 		String requestMethod = HTTPEx.getRequestMethod();
 		if(requestMethod.equals("POST"))
 		{
-			System.out.println(ZonedDateTime.now(ZoneId.of("America/Chicago")) + " GOT DATA FROM USER!");
 			JSONObject request = new JSONObject(readRequest(HTTPEx.getRequestBody()));
 			boolean postedAdLocationVisit = false;
 			while(!postedAdLocationVisit){
@@ -65,7 +64,6 @@ public class RequestHandler implements HttpHandler {
 				HTTPEx.getResponseHeaders().add("content-type", "text/javascript");
 				HTTPEx.sendResponseHeaders(200, riveted.length);
 				HTTPEx.getResponseBody().write(riveted);
-				
 			}
 			else{
 				try{
@@ -115,7 +113,7 @@ public class RequestHandler implements HttpHandler {
 			HTTPEx.sendResponseHeaders(404, fourOhFourArray.length);
 			HTTPEx.getResponseBody().write(fourOhFourArray);
 		}
-		
+		HTTPEx.getResponseBody().flush();
 		HTTPEx.close();
 	}//end handle
 	
